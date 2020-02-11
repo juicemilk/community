@@ -61,8 +61,6 @@ public class PageDTO {
                 }
             }
         }
-
-        System.out.println(pages.size());
         if(page==1){
             showPreviousPage=false;
         }else{
