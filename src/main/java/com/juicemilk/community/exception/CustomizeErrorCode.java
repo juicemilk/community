@@ -7,7 +7,8 @@ public enum CustomizeErrorCode implements InCustomizeErrorCode {
     NO_LOGIN(2004,"请登录后后回复"),
     SYSTEM_ERROR(2005,"服务器异常，请稍后再试"),
     TYPE_PARAM_WRONG(2006,"评论或问题不存在"),
-    INVALID_COMMENT(2007,"评论内容不能为空，请重新输入")
+    INVALID_COMMENT(2007,"评论内容不能为空，请重新输入"),
+    NOTIFICATION_NOT_FOUND(2008,"问题或评论未找到"),
 ;
     private String errorMessage;
     private Integer code;

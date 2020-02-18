@@ -33,6 +33,7 @@
         <table  tableName="user" domainObjectName="User" ></table>
         <table  tableName="question" domainObjectName="Question" ></table>
         <table  tableName="comment" domainObjectName="Comment" ></table>
+        <table  tableName="notification" domainObjectName="Notification" ></table>
 <!--            <property name="useActualColumnNames" value="false"/>-->
 <!--            <generatedKey column="ID" sqlStatement="DB2" identity="true" />-->
 <!--            <columnOverride column="DATE_FIELD" property="startDate" />-->

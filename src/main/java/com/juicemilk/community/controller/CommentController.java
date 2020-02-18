@@ -1,20 +1,20 @@
 package com.juicemilk.community.controller;
 
+import com.juicemilk.community.dto.CommentCreateDTO;
 import com.juicemilk.community.dto.CommentDTO;
 import com.juicemilk.community.dto.ResultDTO;
+import com.juicemilk.community.enums.CommentTypeEnum;
 import com.juicemilk.community.exception.CustomizeErrorCode;
-import com.juicemilk.community.mapper.CommentMapper;
 import com.juicemilk.community.model.Comment;
 import com.juicemilk.community.model.User;
 import com.juicemilk.community.service.CommentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 public class CommentController {
@@ -22,24 +22,31 @@ public class CommentController {
     private CommentService commentService;
     @ResponseBody
     @RequestMapping(value="/comment",method = RequestMethod.POST)
-    public Object post(@RequestBody CommentDTO commentDTO,
+    public Object post(@RequestBody CommentCreateDTO commentCreateDTO,
                        HttpServletRequest request){
         User user=(User)request.getSession().getAttribute("user");
         if(user==null){
             return ResultDTO.error0f(CustomizeErrorCode.NO_LOGIN);
         }
-        if(commentDTO.getContent()==""){
+        if(commentCreateDTO==null|| StringUtils.isBlank(commentCreateDTO.getContent())){
             return ResultDTO.error0f(CustomizeErrorCode.INVALID_COMMENT);
         }
         Comment comment=new Comment();
-        comment.setParentId(commentDTO.getParentId());
-        comment.setContent(commentDTO.getContent());
-        comment.setType(commentDTO.getType());
+        comment.setParentId(commentCreateDTO.getParentId());
+        comment.setContent(commentCreateDTO.getContent());
+        comment.setType(commentCreateDTO.getType());
         comment.setGmtCreate(System.currentTimeMillis());
         comment.setGmtModified(comment.getGmtCreate());
         comment.setCommentator(user.getId());
         comment.setLikeCount(0L);
-        commentService.insert(comment);
+        comment.setCommentCount(0);
+        commentService.insert(comment,user);
         return ResultDTO.ok0f();
+    }
+    @ResponseBody
+    @RequestMapping(value="/comment/{id}",method = RequestMethod.GET)
+    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name="id") Long id){
+        List<CommentDTO> commentDTOList = commentService.listByTargetId(id, CommentTypeEnum.COMMENT);
+        return ResultDTO.ok0f(commentDTOList);
     }
 }

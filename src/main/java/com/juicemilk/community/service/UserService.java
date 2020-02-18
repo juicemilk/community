@@ -23,13 +23,6 @@ public class UserService {
             user.setGmtModified(user.getGmtCreate());
             userMapper.insert(user);
         }else{
-//            User dbUser=dbUsers.get(0);
-//            User updateUser=new User();
-//            updateUser.setGmtModified(System.currentTimeMillis());
-//            updateUser.setLogin(user.getLogin());
-//            updateUser.setName(dbUser.getName());
-//            updateUser.setAvatarUrl(user.getAvatarUrl());
-//            updateUser.setToken(user.getToken());
             user.setGmtModified(System.currentTimeMillis());
             UserExample example=new UserExample();
             example.createCriteria().andAccountIdEqualTo(user.getAccountId());

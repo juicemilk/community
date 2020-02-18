@@ -8,8 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 
 @Data
-public class PageDTO {
-    private List<QuestionDTO> questionDTOList;
+public class PageDTO<T> {
+    private List<T> dataList;
     private boolean showPreviousPage;
     private boolean showFirstPage;
     private boolean showNextPage;

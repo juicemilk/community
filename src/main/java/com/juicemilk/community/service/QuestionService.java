@@ -11,6 +11,7 @@ import com.juicemilk.community.model.Question;
 import com.juicemilk.community.model.QuestionExample;
 import com.juicemilk.community.model.User;
 import com.juicemilk.community.model.UserExample;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -36,12 +38,13 @@ public class QuestionService {
     }
 
     public PageDTO list(Integer page, Integer size) {
-        PageDTO pageDTO=new PageDTO();
+        PageDTO<QuestionDTO> pageDTO=new PageDTO();
         Integer totalCount=(int)questionMapper.countByExample(new QuestionExample());
         pageDTO.setPagination(totalCount,page,size);
         page=pageDTO.getPage();
         Integer offset=size*(page-1);
         QuestionExample questionExample=new QuestionExample();
+        questionExample.setOrderByClause("gmt_modified desc");
         List<Question> questionList = questionMapper.selectByExampleWithRowbounds(questionExample,new RowBounds(offset,size));
         List<QuestionDTO> questionDTOList=new ArrayList<>();
         for (Question question : questionList) {
@@ -53,15 +56,16 @@ public class QuestionService {
             questionDTO.setUser(users.get(0));
             questionDTOList.add(questionDTO);
         }
-        pageDTO.setQuestionDTOList(questionDTOList);
+        pageDTO.setDataList(questionDTOList);
 
         return pageDTO;
     }
 
     public PageDTO listByUser(Long id,Integer page,Integer size){
-        PageDTO pageDTO=new PageDTO();
+        PageDTO<QuestionDTO> pageDTO=new PageDTO();
         QuestionExample questionExample=new QuestionExample();
         questionExample.createCriteria().andCreatorEqualTo(id);
+        questionExample.setOrderByClause("gmt_modified desc");
         Integer totalCount=(int)questionMapper.countByExample(questionExample);
         pageDTO.setPagination(totalCount,page,size);
         page=pageDTO.getPage();
@@ -77,7 +81,7 @@ public class QuestionService {
             questionDTO.setUser(users.get(0));
             questionDTOList.add(questionDTO);
         }
-        pageDTO.setQuestionDTOList(questionDTOList);
+        pageDTO.setDataList(questionDTOList);
 
         return pageDTO;
     }
@@ -114,5 +118,23 @@ public class QuestionService {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
+    }
+
+    public List<QuestionDTO> selectRelated(QuestionDTO questionDTO) {
+        if(StringUtils.isBlank(questionDTO.getTag())){
+            return new ArrayList<>();
+        }
+//        StringUtils.split(questionDTO.getTag(),",|，");
+        String tempTag=StringUtils.replace(questionDTO.getTag(),",","|");
+        String newTag=StringUtils.replace(tempTag,"，","|");
+        Question question=new Question();
+        question.setId(questionDTO.getId());
+        question.setTag(newTag);
+        List<Question> questionList=questionExtMapper.selectRelated(question);
+        List<QuestionDTO> questionDTOList=questionList.stream().map(question1 -> {QuestionDTO questionDTO1=new QuestionDTO();
+        BeanUtils.copyProperties(question1,questionDTO1);
+        return questionDTO1;
+        }).collect(Collectors.toList());
+        return questionDTOList;
     }
 }
