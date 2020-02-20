@@ -94,7 +94,7 @@ function collapseComment(e){
             $.getJSON( "/comment/"+commentId, function( data) {
 
                 $.each( data.data.reverse(), function( index,comment  ) {
-
+                    var userurl="/profile?userId="+comment.user.id
                     var mediaBodyElement=$("<div/>",{
                         "class":"media-body",
                         "style":"padding-left: 3px; font-size: 14px",
@@ -116,10 +116,13 @@ function collapseComment(e){
 
                     var mediaLeftElement=$("<div/>",{
                         "class":"media-left",
+                    }).append($("<a/>",{
+                        "href":userurl,
                     }).append($("<img/>",{
                         "class":"media-object img-rounded media-image",
                         "src":comment.user.avatarUrl
-                    }));
+                    })));
+
 
                     var mediaElement=$("<div/>",{
                         "class":"media ",

@@ -50,7 +50,7 @@
 <!--                        </div>-->
                         <div class="media-body">
                             <p class="media-heading" style="margin-bottom: 26px;">
-                                <a th:href="@{'/profile/'(userId=${notification.notifierUser.id})}" th:text="${notification.notifierUser.name}"></a><span th:text="${' '+notification.replyType+' '}"></span>
+                                <a th:href="@{'/profile/'(userId=${notification.notifierUser.id})}" th:text="${notification.notifierUser.login}"></a><span th:text="${' '+notification.replyType+' '}"></span>
                                 <a th:href="@{'/notification/'+${notification.id}}" th:text="${notification.outerTitle}"></a>
                                 <span class="label label-danger" th:if="${notification.status==0}">未读</span>
                             </p>
@@ -97,7 +97,7 @@
                     <span class="badge" >14</span>
                     </a>
                 <a th:href="@{replies(userId=${userId})}" th:class="${section =='replies'}? 'active list-group-item':'list-group-item'" >
-                    <span class="badge" th:text="${session.unreadCount}"></span>
+                    <span class="badge" th:text="${session.unreadCount}" th:if="${session.unreadCount!=0}"></span>
                     最新回复</a>
                 <a href="/profile/follow" th:class="${section =='follow'}? 'active list-group-item':'list-group-item'" >[[${t}+'的关注']]
                     <span class="badge">14</span>
@@ -110,5 +110,6 @@
         </div>
     </div>
 </div>
+<div th:insert="~{footer::foot}"></div>
 </body>
 </html>

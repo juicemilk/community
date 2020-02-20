@@ -17,6 +17,8 @@
 [FlyWay 数据库维护工具](https://flywaydb.org/getstarted/firststeps/maven)  
 [Lombok](https://projectlombok.org/)  
 [IDEA 插件](https://plugins.jetbrains.com/)  
-[Mybatis Generator](http://mybatis.org/generator)
+[Mybatis Generator](http://mybatis.org/generator)  
+[MarkDown 富文本工具](http://editor.md.ipandao.com/)  
+[图标库](https://www.iconfont.cn/)
 ## Bash
 mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate

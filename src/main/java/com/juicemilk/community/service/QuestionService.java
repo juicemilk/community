@@ -2,6 +2,7 @@ package com.juicemilk.community.service;
 
 import com.juicemilk.community.dto.PageDTO;
 import com.juicemilk.community.dto.QuestionDTO;
+import com.juicemilk.community.dto.QuestionQueryDTO;
 import com.juicemilk.community.exception.CustomizeErrorCode;
 import com.juicemilk.community.exception.CustomizeException;
 import com.juicemilk.community.mapper.QuestionExtMapper;
@@ -37,15 +38,27 @@ public class QuestionService {
         questionExtMapper.incView(question);
     }
 
-    public PageDTO list(Integer page, Integer size) {
+    public PageDTO list(String search, Integer page, Integer size) {
+        if(StringUtils.isNotBlank(search)){
+            String firstSearch=StringUtils.replace(search,",","|");
+            String secondSearch=StringUtils.replace(firstSearch,",","|");
+            search=StringUtils.replace(secondSearch," ","|");
+
+
+        }
         PageDTO<QuestionDTO> pageDTO=new PageDTO();
-        Integer totalCount=(int)questionMapper.countByExample(new QuestionExample());
+
+        QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
+        questionQueryDTO.setSearch(search);
+        Integer totalCount=(int)questionExtMapper.countBySearch(questionQueryDTO);
         pageDTO.setPagination(totalCount,page,size);
         page=pageDTO.getPage();
         Integer offset=size*(page-1);
         QuestionExample questionExample=new QuestionExample();
         questionExample.setOrderByClause("gmt_modified desc");
-        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(questionExample,new RowBounds(offset,size));
+        questionQueryDTO.setPage(offset);
+        questionQueryDTO.setSize(size);
+        List<Question> questionList = questionExtMapper.selectBySearch(questionQueryDTO);
         List<QuestionDTO> questionDTOList=new ArrayList<>();
         for (Question question : questionList) {
             UserExample userExample=new UserExample();
@@ -134,6 +147,17 @@ public class QuestionService {
         List<QuestionDTO> questionDTOList=questionList.stream().map(question1 -> {QuestionDTO questionDTO1=new QuestionDTO();
         BeanUtils.copyProperties(question1,questionDTO1);
         return questionDTO1;
+        }).collect(Collectors.toList());
+        return questionDTOList;
+    }
+
+    public List<QuestionDTO> hotQuestionList(int page, int size) {
+        QuestionExample questionExample=new QuestionExample();
+        questionExample.setOrderByClause("view_count desc");
+        List<Question> questionList=questionMapper.selectByExampleWithRowbounds(questionExample,new RowBounds(page,size));
+        List<QuestionDTO> questionDTOList=questionList.stream().map(question1 -> {QuestionDTO questionDTO1=new QuestionDTO();
+            BeanUtils.copyProperties(question1,questionDTO1);
+            return questionDTO1;
         }).collect(Collectors.toList());
         return questionDTOList;
     }

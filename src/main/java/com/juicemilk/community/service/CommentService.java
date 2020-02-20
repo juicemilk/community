@@ -70,7 +70,10 @@ public class CommentService {
     }
 
 //创建通知
-    private void createNotify(Comment comment, Long receiver, String commentatorName,String title,Long parentId,NotificationTypeEnum notificationType) {
+    private void  createNotify(Comment comment, Long receiver, String commentatorName,String title,Long parentId,NotificationTypeEnum notificationType) {
+        if(comment.getCommentator().equals(receiver)){
+            return;
+        }
         Notification notification=new Notification();
         notification.setGmtCreate(System.currentTimeMillis());
         notification.setType(notificationType.getType());

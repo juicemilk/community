@@ -6,10 +6,14 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="/css/community.css">
+    <link rel="stylesheet" href="/css/editormd.preview.css" />
     <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
     <script src="/js/bootstrap.min.js" type="application/javascript"></script>
     <script src="/js/moment.js" type="application/javascript"></script>
     <script src="/js/community.js" type="application/javascript"></script>
+    <script src="/js/editormd.js" type="application/javascript"></script>
+    <script src="/js/lib/marked.min.js" type="application/javascript"></script>
+    <script src="/js/lib/prettify.min.js" type="application/javascript"></script>
 </head>
 <body>
 <div th:insert="~{navigation::nav}"></div>
@@ -25,7 +29,16 @@
                 阅读数：<span th:text="${questionDTO.getViewCount()}"></span>
             </span>
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 " th:text="${questionDTO.description}"></div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 " id="question-view">
+                    <textarea style="display: none" th:text="${questionDTO.description}"></textarea>
+                </div>
+
+                <script type="text/javascript">
+                    $(function() {
+                        var questionView = editormd.markdownToHTML("question-view", {});
+                    });
+                </script>
+
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 " >
                     <span class="label label-info question-tag" th:each="tag:${questionDTO.tag.split(',|，')}">
@@ -52,7 +65,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 comments" th:each="commentDTO:${commentDTOList}">
                     <div class="media ">
                         <div class="media-left">
-                            <a href="/">
+                            <a th:href="@{/profile(userId=${commentDTO.user.id})}">
                                 <img class="media-object img-rounded media-image"
                                      th:src="${commentDTO.user.avatarUrl}">
                             </a>
@@ -89,15 +102,19 @@
                 <!--                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">-->
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="comment_section">
                     <div class="media ">
-                        <div class="media-left">
-                            <a href="/">
+                        <div class="media-left" th:switch="${session.user==null}">
+                            <a href="#" th:case="true">
                                 <img class="media-object img-rounded media-image"
-                                     th:src="${questionDTO.getUser().getAvatarUrl()}">
+                                     src="/images/user.png">
+                            </a>
+                            <a th:href="@{/profile(userId=${session.user.id})}" th:case="false">
+                                <img class="media-object img-rounded media-image"
+                                     th:src="${session.user.avatarUrl}">
                             </a>
                         </div>
                         <div class="media-body" style="padding: 18px; padding-left: 3px;">
                             <h5 class="media-heading">
-                                <span th:text="${questionDTO.user.login}"></span>
+                                <span th:text="${session.user!=null? session.user.login:'游客'}"></span>
                             </h5>
                         </div>
                     </div>
@@ -119,7 +136,7 @@
                     <div class="media-left">
                         <a th:href="@{/profile(userId=${questionDTO.user.id})}">
                             <img class="media-object img-circle media-image"
-                                 th:src="${questionDTO.getUser().getAvatarUrl()}">
+                                 th:src="${questionDTO.user.avatarUrl}">
                         </a>
                     </div>
 
@@ -133,7 +150,7 @@
             <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                 <h4>我的相册</h4>
-            <img class="img-thumbnail imgstyle" src="/img/c.png">
+            <img class="img-thumbnail imgstyle" src="/images/d.png">
             </div>
             <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
@@ -151,6 +168,6 @@
         </div>
 
     </div>
-</div>
+<div th:insert="~{footer::foot}"></div>
 </body>
 </html>
