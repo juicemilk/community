@@ -108,4 +108,37 @@ public class CommentService {
         return commentDTO;}).collect(Collectors.toList());
         return  commentDTOList;
     }
+//    删除评论
+    public Long delectComment(Long id){
+        Comment comment=commentMapper.selectByPrimaryKey(id);
+        if(comment==null){
+            throw new CustomizeException(CustomizeErrorCode.COMMENT_NOT_FOUND);
+        }
+        if(comment.getType()==CommentTypeEnum.COMMENT.getType()){
+            Comment parentComment=commentMapper.selectByPrimaryKey(comment.getParentId());
+            if(parentComment==null){
+                throw new CustomizeException(CustomizeErrorCode.COMMENT_NOT_FOUND);
+            }
+            Question question=questionMapper.selectByPrimaryKey(parentComment.getParentId());
+            if(question==null){
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
+            commentMapper.deleteByPrimaryKey(id);
+            parentComment.setCommentCount(1);
+            commentExtMapper.decComment(parentComment);
+            return question.getId();
+
+        }else{
+            Question question=questionMapper.selectByPrimaryKey(comment.getParentId());
+            if(question==null){
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
+            commentMapper.deleteByPrimaryKey(id);
+            question.setCommentCount(1);
+            questionExtMapper.decComment(question);
+            return question.getId();
+
+        }
+
+    }
 }

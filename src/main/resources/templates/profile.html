@@ -33,10 +33,16 @@
                         <span th:text="${#dates.format(question.getGmtCreate(),'yyyy-MM-dd HH:mm')}"></span>
                       <a th:href="@{'/publish/'+${question.id}}" class="community-menu"
                          style="width: 48px;"
-                         th:if="(${session.user!=null}) and (${session.user.accountId.equals(question.user.accountId)})">
+                         th:if="(${session.user!=null}) and (${session.user.id.equals(question.user.id)})">
                             <span class="glyphicon glyphicon-pencil" aria-hidden="true">编辑
                             </span>
                         </a>
+                            <!--                    删除问题-->
+                    <a th:href="@{/delect/question(id=${question.id})}" class="community-menu" style="width: 48px"
+                       th:if="(${session.user!=null}) and (${session.user.id.equals(question.user.id)})">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true">删除
+                </span>
+                    </a>
                     </span>
                     </div>
                 </div>

@@ -80,6 +80,8 @@ function comment2target(targetId,type,content){
 function collapseComment(e){
     var commentId=e.getAttribute("data-commentId");
     var comments=$("#comment-"+commentId);
+    var userId=e.getAttribute("data-user");
+    console.log(userId);
     if(comments.hasClass("in")){
         comments.toggleClass("in");
         e.classList.remove("active");
@@ -93,45 +95,99 @@ function collapseComment(e){
         }else{
             $.getJSON( "/comment/"+commentId, function( data) {
 
-                $.each( data.data.reverse(), function( index,comment  ) {
-                    var userurl="/profile?userId="+comment.user.id
-                    var mediaBodyElement=$("<div/>",{
-                        "class":"media-body",
-                        "style":"padding-left: 3px; font-size: 14px",
-                    }).append($("<h7/>",{
-                        "class":"media-heading",
-                        "style":"color: #155faa",
-                        "html":comment.user.login
-                    })).append($("<div/>",{
-                        "style":"margin-top: 6px",
-                        "html":comment.content
-                    })).append($("<div/>",{
-                        "class":"comment_menu",
+                $.each( data.data.reverse(), function( index,comment) {
+                    var userurl="/profile?userId="+comment.user.id;
+                    var delecturl="/delect/comment?id="+comment.id;
+                    if(userId!=null&&userId==(comment.user.id)){
+                        var mediaBodyElement=$("<div/>",{
+                            "class":"media-body",
+                            "style":"padding-left: 3px; font-size: 14px",
+                        }).append($("<h7/>",{
+                            "class":"media-heading",
+                            "style":"color: #155faa",
+                            "html":comment.user.login
+                        })).append($("<a/>",{
+                                "href":delecturl,
+                                "class":"community-menu pull-right",
+                                "style":"width: 48px",
+                            }).append($("<span/>",{
+                                "class":"glyphicon glyphicon-trash",
+                                "aria-hidden":"true",
+                                "src":comment.user.avatarUrl,
+                                "html":"删除",
+                            }))
+                        ).append($("<div/>",{
+                            "style":"margin-top: 6px",
+                            "html":comment.content
+                        })).append($("<div/>",{
+                            "class":"comment_menu",
 
-                    })).append($("<span/>",{
-                        "class":"pull-right",
-                        "html":moment(comment.gmtCreate).format('YYYY-MM-DD HH:mm')
+                        })).append($("<span/>",{
+                            "class":"pull-right",
+                            "html":moment(comment.gmtCreate).format('YYYY-MM-DD HH:mm')
 
-                    }));
+                        }));
 
-                    var mediaLeftElement=$("<div/>",{
-                        "class":"media-left",
-                    }).append($("<a/>",{
-                        "href":userurl,
-                    }).append($("<img/>",{
-                        "class":"media-object img-rounded media-image",
-                        "src":comment.user.avatarUrl
-                    })));
+                        var mediaLeftElement=$("<div/>",{
+                            "class":"media-left",
+                        }).append($("<a/>",{
+                            "href":userurl,
+                        }).append($("<img/>",{
+                            "class":"media-object img-rounded media-image",
+                            "src":comment.user.avatarUrl
+                        })));
 
 
-                    var mediaElement=$("<div/>",{
-                        "class":"media ",
-                    }).append(mediaLeftElement).append(mediaBodyElement);
+                        var mediaElement=$("<div/>",{
+                            "class":"media ",
+                        }).append(mediaLeftElement).append(mediaBodyElement);
 
-                    var commentElement=$("<div/>",{
-                        "class":"col-lg-12 col-md-12 col-sm-12 col-xs-12 comments",
-                    }).append(mediaElement);
-                    subCommentContainer.prepend(commentElement);
+                        var commentElement=$("<div/>",{
+                            "class":"col-lg-12 col-md-12 col-sm-12 col-xs-12 comments",
+                        }).append(mediaElement);
+                        subCommentContainer.prepend(commentElement);
+                    }
+                    else{
+                        var mediaBodyElement=$("<div/>",{
+                            "class":"media-body",
+                            "style":"padding-left: 3px; font-size: 14px",
+                        }).append($("<h7/>",{
+                            "class":"media-heading",
+                            "style":"color: #155faa",
+                            "html":comment.user.login
+                        })).append($("<div/>",{
+                            "style":"margin-top: 6px",
+                            "html":comment.content
+                        })).append($("<div/>",{
+                            "class":"comment_menu",
+
+                        })).append($("<span/>",{
+                            "class":"pull-right",
+                            "html":moment(comment.gmtCreate).format('YYYY-MM-DD HH:mm')
+
+                        }));
+
+                        var mediaLeftElement=$("<div/>",{
+                            "class":"media-left",
+                        }).append($("<a/>",{
+                            "href":userurl,
+                        }).append($("<img/>",{
+                            "class":"media-object img-rounded media-image",
+                            "src":comment.user.avatarUrl
+                        })));
+
+
+                        var mediaElement=$("<div/>",{
+                            "class":"media ",
+                        }).append(mediaLeftElement).append(mediaBodyElement);
+
+                        var commentElement=$("<div/>",{
+                            "class":"col-lg-12 col-md-12 col-sm-12 col-xs-12 comments",
+                        }).append(mediaElement);
+                        subCommentContainer.prepend(commentElement);
+
+                    }
+
                 });
 
             });
