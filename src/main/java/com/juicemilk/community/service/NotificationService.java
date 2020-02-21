@@ -29,53 +29,39 @@ public class NotificationService {
     private UserMapper userMapper;
 
     public PageDTO listByUser(Long id, Integer page, Integer size) {
-        PageDTO<NotificationDTO> pageDTO=new PageDTO();
         NotificationExample notificationExample=new NotificationExample();
         notificationExample.createCriteria().andReceiverEqualTo(id);
         notificationExample.setOrderByClause("gmt_create desc");
         Integer totalCount=(int)notificationMapper.countByExample(notificationExample);
-        pageDTO.setPagination(totalCount,page,size);
-        page=pageDTO.getPage();
-        Integer offset=size*(page-1);
-        List<Notification> notificationList = notificationMapper.selectByExampleWithRowbounds(notificationExample,new RowBounds(offset,size));
-        if(notificationList.size()==0){
-            return pageDTO;
-        }
-        List<NotificationDTO> notificationDTOList=new ArrayList<>();
-        for(Notification notification:notificationList){
-            NotificationDTO notificationDTO=new NotificationDTO();
-            BeanUtils.copyProperties(notification,notificationDTO);
-            notificationDTO.setReplyType(NotificationTypeEnum.nameOfType(notification.getType()));
-            User notifier=userMapper.selectByPrimaryKey(notification.getNotifier());
-            notificationDTO.setNotifierUser(notifier);
-            notificationDTOList.add(notificationDTO);
-        }
-
-        pageDTO.setDataList(notificationDTOList);
-
-        return pageDTO;
+        return getPageDTO(page, size, notificationExample, totalCount);
     }
 
 
     public PageDTO listByOtherUser(Long id, Integer page, Integer size) {
-        PageDTO<NotificationDTO> pageDTO=new PageDTO();
         NotificationExample notificationExample=new NotificationExample();
         notificationExample.createCriteria().andNotifierEqualTo(id);
         notificationExample.setOrderByClause("gmt_create desc");
         Integer totalCount=(int)notificationMapper.countByExample(notificationExample);
-        pageDTO.setPagination(totalCount,page,size);
-        page=pageDTO.getPage();
-        Integer offset=size*(page-1);
-        List<Notification> notificationList = notificationMapper.selectByExampleWithRowbounds(notificationExample,new RowBounds(offset,size));
-        if(notificationList.size()==0){
+        return getPageDTO(page, size, notificationExample, totalCount);
+    }
+
+//    获得PageDTO
+
+    private PageDTO getPageDTO(Integer page, Integer size, NotificationExample notificationExample, Integer totalCount) {
+        PageDTO<NotificationDTO> pageDTO = new PageDTO();
+        pageDTO.setPagination(totalCount, page, size);
+        page = pageDTO.getPage();
+        Integer offset = size * (page - 1);
+        List<Notification> notificationList = notificationMapper.selectByExampleWithRowbounds(notificationExample, new RowBounds(offset, size));
+        if (notificationList.size() == 0) {
             return pageDTO;
         }
-        List<NotificationDTO> notificationDTOList=new ArrayList<>();
-        for(Notification notification:notificationList){
-            NotificationDTO notificationDTO=new NotificationDTO();
-            BeanUtils.copyProperties(notification,notificationDTO);
+        List<NotificationDTO> notificationDTOList = new ArrayList<>();
+        for (Notification notification : notificationList) {
+            NotificationDTO notificationDTO = new NotificationDTO();
+            BeanUtils.copyProperties(notification, notificationDTO);
             notificationDTO.setReplyType(NotificationTypeEnum.nameOfType(notification.getType()));
-            User notifier=userMapper.selectByPrimaryKey(notification.getNotifier());
+            User notifier = userMapper.selectByPrimaryKey(notification.getNotifier());
             notificationDTO.setNotifierUser(notifier);
             notificationDTOList.add(notificationDTO);
         }
@@ -84,7 +70,6 @@ public class NotificationService {
 
         return pageDTO;
     }
-
 
 
 
