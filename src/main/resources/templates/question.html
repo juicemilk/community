@@ -60,6 +60,18 @@
                 <span class="glyphicon glyphicon-trash" aria-hidden="true">删除
                 </span>
                     </a>
+
+                    <!--收藏-->
+                    <a th:href="@{/collect/confirm(questionId=${questionDTO.id},userId=${session.user.id})}" class="community-menu" style="width: 48px"
+                       th:if="(${session.user!=null}) and (${!session.user.id.equals(questionDTO.user.id)}) and (${collectStatus==false})">
+                        <span class="glyphicon glyphicon-star-empty" aria-hidden="true" >收藏</span>
+                    </a>
+
+                    <a th:href="@{/collect/cancel(questionId=${questionDTO.id},userId=${session.user.id})}" class="community-menu" style="width: 48px"
+                       th:if="(${session.user!=null}) and (${!session.user.id.equals(questionDTO.user.id)}) and (${collectStatus==true})">
+                        <span class="glyphicon glyphicon-star" aria-hidden="true" >取消收藏</span>
+                    </a>
+
                 </div>
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
             </div>
@@ -162,11 +174,27 @@
                         </a>
                     </div>
 
-                    <div class="media-body" style="padding: 18px;padding-left: 3px;">
+                    <div class="media-body" style="padding: 18px;padding-left: 3px;width: 200px">
                         <h5 class="media-heading">
                             <span th:text="${questionDTO.user.login}"></span>
                         </h5>
+
+
                     </div>
+                    <!--关注-->
+                    <div class="media-right " style="width: 100px;padding-top: 15px;">
+                        <a th:href="@{/follow/confirm(idolId=${questionDTO.user.id},fanId=${session.user.id},questionId=${questionDTO.id})}"   style="font-size: 15px;color: #999;"
+                           th:if="(${session.user!=null}) and (${!session.user.id.equals(questionDTO.user.id)})and (${followStatus==false}) ">
+                            <span class="glyphicon glyphicon-heart-empty" aria-hidden="true" >关注</span>
+                        </a>
+
+                        <a th:href="@{/follow/cancel(idolId=${questionDTO.user.id},fanId=${session.user.id},questionId=${questionDTO.id})}"   style="font-size: 15px;color: #999;"
+                           th:if="(${session.user!=null}) and (${!session.user.id.equals(questionDTO.user.id)}) and (${followStatus==true})">
+                            <span class="glyphicon glyphicon-heart" aria-hidden="true" >取消关注</span>
+                        </a>
+                    </div>
+
+
                 </div>
             </div>
             <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
@@ -183,8 +211,6 @@
                            th:text="${relatedQuestion.title}"></a>
                     </li>
                 </ul>
-
-
             </div>
         </div>
 

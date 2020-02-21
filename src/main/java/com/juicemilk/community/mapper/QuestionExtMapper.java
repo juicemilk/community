@@ -9,6 +9,9 @@ public interface QuestionExtMapper {
     int incView(Question record);
     int incComment(Question record);
     int decComment(Question record);
+
+    int incCollect(Question record);
+    int decCollect(Question record);
     List<Question> selectRelated(Question question);
 
     Object countBySearch(QuestionQueryDTO questionQueryDTO);

@@ -31,6 +31,18 @@
         where id = #{id}
     </update>
 
+    <update id="incCollect" parameterType="com.juicemilk.community.model.Question">
+        update QUESTION
+        set COLLECT_COUNT = COLLECT_COUNT + #{collectCount,jdbcType=INTEGER}
+        where id = #{id}
+    </update>
+
+    <update id="decCollect" parameterType="com.juicemilk.community.model.Question">
+        update QUESTION
+        set COLLECT_COUNT = COLLECT_COUNT - #{collectCount,jdbcType=INTEGER}
+        where id = #{id}
+    </update>
+
     <select id="selectRelated" parameterType="com.juicemilk.community.model.Question" resultMap="BaseResultMap">
 
         select * from QUESTION where id !=#{id} and tag regexp #{tag}

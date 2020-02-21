@@ -1,0 +1,1 @@
+alter table QUESTION alter column COLLECT_COUNT INT default 0;

@@ -34,6 +34,8 @@
         <table  tableName="question" domainObjectName="Question" ></table>
         <table  tableName="comment" domainObjectName="Comment" ></table>
         <table  tableName="notification" domainObjectName="Notification" ></table>
+        <table  tableName="question_collect" domainObjectName="QuestionCollect" ></table>
+        <table  tableName="user_follow" domainObjectName="UserFollow" ></table>
 <!--            <property name="useActualColumnNames" value="false"/>-->
 <!--            <generatedKey column="ID" sqlStatement="DB2" identity="true" />-->
 <!--            <columnOverride column="DATE_FIELD" property="startDate" />-->

@@ -56,6 +56,44 @@ public class NotificationService {
         return pageDTO;
     }
 
+
+    public PageDTO listByOtherUser(Long id, Integer page, Integer size) {
+        PageDTO<NotificationDTO> pageDTO=new PageDTO();
+        NotificationExample notificationExample=new NotificationExample();
+        notificationExample.createCriteria().andNotifierEqualTo(id);
+        notificationExample.setOrderByClause("gmt_create desc");
+        Integer totalCount=(int)notificationMapper.countByExample(notificationExample);
+        pageDTO.setPagination(totalCount,page,size);
+        page=pageDTO.getPage();
+        Integer offset=size*(page-1);
+        List<Notification> notificationList = notificationMapper.selectByExampleWithRowbounds(notificationExample,new RowBounds(offset,size));
+        if(notificationList.size()==0){
+            return pageDTO;
+        }
+        List<NotificationDTO> notificationDTOList=new ArrayList<>();
+        for(Notification notification:notificationList){
+            NotificationDTO notificationDTO=new NotificationDTO();
+            BeanUtils.copyProperties(notification,notificationDTO);
+            notificationDTO.setReplyType(NotificationTypeEnum.nameOfType(notification.getType()));
+            User notifier=userMapper.selectByPrimaryKey(notification.getNotifier());
+            notificationDTO.setNotifierUser(notifier);
+            notificationDTOList.add(notificationDTO);
+        }
+
+        pageDTO.setDataList(notificationDTOList);
+
+        return pageDTO;
+    }
+
+
+
+
+
+
+
+
+
+
     public Long unreadCount(Long id){
         NotificationExample notificationExample=new NotificationExample();
         notificationExample.createCriteria().andReceiverEqualTo(id).andStatusEqualTo(NotificationStatusEnum.UNREAD.getStatus());

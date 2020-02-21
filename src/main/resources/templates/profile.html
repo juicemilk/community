@@ -16,6 +16,7 @@
         <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
             <h2><span th:text="${sectionName}"></span></h2>
             <hr>
+<!--            问题列表-->
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section.equals('questions')}">
                 <div class="media " th:each="question:${pageDTO.dataList}">
                     <div class="media-left">
@@ -47,6 +48,7 @@
                     </div>
                 </div>
             </div>
+<!--            消息列表-->
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section.equals('replies')}">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
                     <div class="media " th:each="notification:${pageDTO.dataList}">
@@ -61,6 +63,55 @@
                                 <span class="label label-danger" th:if="${notification.status==0}">未读</span>
                             </p>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--            关注列表-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section.equals('follow')}">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+                    <div class="media " th:each="user:${pageDTO.dataList}">
+                        <div class="media-left">
+                            <a th:href="@{'/profile/'(userId=${user.getId()})}">
+                                <img class="media-object img-circle media-image" th:src="${user.getAvatarUrl()}">
+                            </a>
+                        </div>
+                        <div class="media-body" style="padding-top: 12px;width: 200px">
+                            <span th:text="${user.getLogin()}" style="font-size: 16px"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--            收藏问题-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:if="${section.equals('collect')}">
+                <div class="media " th:each="question:${pageDTO.dataList}">
+                    <div class="media-left">
+                        <a th:href="@{'/question/'+${question.getId()}}">
+                            <img class="media-object img-circle media-image" th:src="${question.getUser().getAvatarUrl()}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">
+                            <a th:href="@{'/question/'+${question.getId()}}" th:text="${question.getTitle()}"></a>
+                        </h4>
+                        <span class="text-desc"><span th:text="${question.getCommentCount()}"></span>个回复<span
+                                th:text="${question.getViewCount()}"></span>次浏览<span
+                                th:text="${question.getLikeCount()}"></span>个点赞
+                        <span th:text="${#dates.format(question.getGmtCreate(),'yyyy-MM-dd HH:mm')}"></span>
+                      <a th:href="@{'/publish/'+${question.id}}" class="community-menu"
+                         style="width: 48px;"
+                         th:if="(${session.user!=null}) and (${session.user.id.equals(question.user.id)})">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true">编辑
+                            </span>
+                        </a>
+                            <!--                    删除问题-->
+                    <a th:href="@{/delect/question(id=${question.id})}" class="community-menu" style="width: 48px"
+                       th:if="(${session.user!=null}) and (${session.user.id.equals(question.user.id)})">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true">删除
+                </span>
+                    </a>
+                    </span>
                     </div>
                 </div>
             </div>
@@ -79,7 +130,7 @@
                         </li>
 
                         <li th:each="page:${pageDTO.pages}" th:class="${page==pageDTO.page} ? 'active':''"><a
-                                th:href="@{/profile/questions(page=${page},userId=${userId})}" th:text="${page}"></a></li>
+                                th:href="@{'/profile/'+${section}(page=${page},userId=${userId})}" th:text="${page}"></a></li>
 
                         <li th:if="${pageDTO.showNextPage}">
                             <a th:href="@{'/profile/'+${section}(page=${pageDTO.page}+1,userId=${userId})}" aria-label="Next">
@@ -100,17 +151,17 @@
             <div class="list-group " style="margin-top: 25px;">
                 <a th:href="@{questions(userId=${userId})}"
                    th:class="${section =='questions'}? 'active list-group-item':'list-group-item'" >[[${t}+'的提问']]
-                    <span class="badge" >14</span>
+<!--                    <span class="badge" >14</span>-->
                     </a>
                 <a th:href="@{replies(userId=${userId})}" th:class="${section =='replies'}? 'active list-group-item':'list-group-item'" >
                     <span class="badge" th:text="${session.unreadCount}" th:if="${session.unreadCount!=0}"></span>
-                    最新回复</a>
-                <a href="/profile/follow" th:class="${section =='follow'}? 'active list-group-item':'list-group-item'" >[[${t}+'的关注']]
-                    <span class="badge">14</span>
+                    [[${repliesname}]]</a>
+                <a th:href="@{follow(userId=${userId})}" th:class="${section =='follow'}? 'active list-group-item':'list-group-item'" >[[${t}+'的关注']]
+<!--                    <span class="badge">14</span>-->
                     </a>
-                <a href="/profile/collection"
-                   th:class="${section =='collection'}? 'active list-group-item':'list-group-item'" >[[${t}+'的收藏']]
-                    <span class="badge">14</span>
+                <a th:href="@{collect(userId=${userId})}"
+                   th:class="${section =='collect'}? 'active list-group-item':'list-group-item'" >[[${t}+'的收藏']]
+<!--                    <span class="badge">14</span>-->
                     </a>
             </div>
         </div>
